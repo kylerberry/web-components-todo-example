@@ -12,4 +12,8 @@ __Things I wanted to achieve:__
   - using dispatched events for communication with parents
 - provide an example of setters for passing rich data (arrays, objects)
 
+__Things that could be optimized:__
+- batching multiple attribute updates `attributeChangedCallback` to one render cycle
+- attributeMarshalling (syncing attributes to obj properties)
+
 Here are some best practices I followed: https://developers.google.com/web/fundamentals/web-components/best-practices
