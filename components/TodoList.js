@@ -1,30 +1,40 @@
 /**
  * TodoList Component
  */
-window.customElements.define('todo-list', class extends HTMLElement {
+window.customElements.define('todo-list', class extends ComponentMixin(HTMLElement) {
     constructor() {
         super()
-        this.root = this.attachShadow({mode: 'open'})
-        this.todos = []
+        this.items = []
     }
 
     // public setter since rich data is not to be serialized for attributes
     // https://developers.google.com/web/fundamentals/web-components/best-practices#aim-to-only-accept-rich-data-objects-arrays-as-properties
     set todos(todos) {
-        this.root.innerHTML = this.render(todos)
+        this.items = todos
+        this.render(todos)
+    }
+
+    get todos() {
+        return this.items
     }
 
     render = (todos = []) => {
-        return `
-        <ul>
-            ${todos.map((todo, index) => `
-                <li>
-                    <todo-item index=${index}>
-                        ${todo}
-                    </todo-item>
-                </li>
-            `).join('')}
-        </ul>
-    `
+        let template
+        if (todos.length) {
+            template = `
+                <ul>
+                    ${todos.map((todo, index) => `
+                        <li>
+                            <todo-item index=${index}>
+                                ${todo}
+                            </todo-item>
+                        </li>
+                    `).join('')}
+                </ul>
+            `
+        } else {
+            template = `<ul><li>Waiting for something to do...</li><ul>`
+        }
+        this.root.innerHTML = template
     }
 })

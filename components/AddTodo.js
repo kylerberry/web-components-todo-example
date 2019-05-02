@@ -1,32 +1,18 @@
-/**
- * AddTodo Component
- */
-window.customElements.define('add-todo', class extends HTMLElement {
-    constructor() {
-        super()
-        this.root = this.attachShadow({mode: 'open'})
-    }
+window.customElements.define('add-todo', class extends ComponentMixin(HTMLElement) {
 
-    connectedCallback() {
-        this.root.innerHTML = this.render()
-        this.root.getElementById('addTodo').addEventListener('click', () => {
-            let input = this.root.getElementById('todoInput')
+    componentDidMount() {
+        this.root.querySelector('#addTodo').addEventListener('click', () => {
+            let input = this.root.querySelector('#todoInput')
             if (!input.value) {
                 return
             }
-            this.dispatchEvent(new CustomEvent('add-todo', {
-                bubbles: true,
-                detail: {
-                    todo: input.value
-                }
-            }))
+            this.dispatchEvent(new CustomEvent('add-todo', {bubbles: true, composed: true, detail: {todo: input.value}}))
             input.value = ''
-            input.blur()
         })
     }
 
     render() {
-        return `
+        this.root.innerHTML = `
             <input id="todoInput" type="text" value="">
             <button id="addTodo">Add Todo</button>
         `

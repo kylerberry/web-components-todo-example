@@ -7,10 +7,72 @@
     <title>Reactive Web Components</title>
 </head>
 <body>
-    <app-view></app-view>
+    <header style="height: 1rem; width: 100%;padding:.5rem;background:lightgray;margin-bottom:1rem;">
+        <div>
+            <display-total total="0"></display-total>&nbsp;Todos
+        </div>
+
+    </header>
+    <section>
+        <todo-container>
+            <add-todo slot="addTodo"></add-todo>
+            <todo-list slot="todoList"></todo-list>
+        </todo-container>
+
+        <todo-container>
+            <add-todo slot="addTodo"></add-todo>
+            <todo-list slot="todoList"></todo-list>
+        </todo-container>
+    </section>
+
+    <script type="text/javascript" src="mixins.js"></script>
     <script type="text/javascript" src="components/AddTodo.js"></script>
-    <script type="text/javascript" src="components/TodoList.js"></script>
     <script type="text/javascript" src="components/TodoItem.js"></script>
-    <script type="text/javascript" src="components/AppView.js"></script>
+    <script type="text/javascript" src="components/TodoList.js"></script>
+    <script type="text/javascript" src="components/DisplayTotal.js"></script>
+    <script type="text/javascript" src="components/TodoContainer.js"></script>
+
+    <script>
+        let displayTotalEl = document.querySelector('display-total')
+
+        // wait to fetch todos
+        const fetchTodos = async () => {
+            await new Promise(resolve => setTimeout(resolve, 2000))
+            return [
+                ['list 1 todo 1', 'list 1 todo 2'],
+                ['list 2 todo 1']
+            ]
+        }
+        
+        // set todos once fetched
+        const setTodoState = async () => {
+            let todos = await fetchTodos()
+            document.querySelectorAll('todo-container').forEach((todoContainer, i) => {
+                todoContainer.todos = todos[i]
+            })
+            displayTotalEl.setAttribute('total', getTodoTotal())
+        }
+
+        // total derived from todos
+        const getTodoTotal = () => {
+            // the DOM is our state modeling device
+            let todos = Array.prototype.map.call(
+                document.querySelectorAll('todo-container'),
+                list => list.todos
+            )
+            return todos.reduce((lacc, list) => {
+                return lacc + list.reduce((tacc) => ++tacc , 0)
+            }, 0)
+        }
+
+        setTodoState()
+
+        document.addEventListener('add-todo', () => {
+            displayTotalEl.setAttribute('total', getTodoTotal())
+        })
+        document.addEventListener('todo-item:completed', () => {
+            displayTotalEl.setAttribute('total', getTodoTotal())
+        })
+    </script>
 </body>
 </html>
